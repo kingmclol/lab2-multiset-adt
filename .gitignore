@@ -1,0 +1,9 @@
+# Intellij stuff
+.idea
+*.iml
+out
+
+# Thing from mac that exists sometimes
+.DS_STORE
+
+.vscode
