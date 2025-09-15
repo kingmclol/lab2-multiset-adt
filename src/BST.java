@@ -2,7 +2,7 @@
  * A minimal implementation of a binary search tree. See the python version for
  * additional documentation.
  * You can also see <a href="https://www.teach.cs.toronto.edu/~csc148h/notes/binary-search-trees/bst_implementation.html">
- *     CSC148 Course Notes Section 8.5 BST Implementation and Search</a>
+ * CSC148 Course Notes Section 8.5 BST Implementation and Search</a>
  * if you want a refresher on BSTs, but it is not required to complete this assignment.
  */
 public class BST {
@@ -29,7 +29,7 @@ public class BST {
 
 
     public boolean isEmpty() {
-        return false; // TODO implement me!
+        return this.root == null;
     }
 
     public boolean contains(int item) {
@@ -47,33 +47,92 @@ public class BST {
 
 
     public void insert(int item) {
-
+        if (this.isEmpty()) {
+            this.root = item;
+            this.left = new BST();
+            this.right = new BST();
+        } else if (item < this.root) {
+            this.left.insert(item);
+        } else if (item > this.root) {
+            this.right.insert(item);
+        } else {
+            // item == this.root; prefer left
+            this.left.insert(item);
+        }
     }
 
 
     public void delete(int item) {
-
+        if (this.root == item) {
+            this.deleteRoot();
+        } else if (item < this.root) {
+            this.left.delete(item);
+        } else {
+            this.right.delete(item);
+        }
     }
 
     private void deleteRoot() {
-
+        if (this.left.isEmpty() && this.right.isEmpty()) {
+            // Leaf
+            this.root = null;
+            this.left = null;
+            this.right = null;
+        } else if (this.left.isEmpty()) {
+            this.root = this.right.root;
+            this.left = this.right.left;
+            this.right = this.right.right;
+        } else if (this.right.isEmpty()) {
+            this.root = this.left.root;
+            this.right = this.left.right;
+            this.left = this.left.left;
+        } else {
+            // Both left and right trees exist.
+            this.root = this.left.extractMax();
+        }
     }
 
 
     private int extractMax() {
-        return -1;
+        if (this.right.isEmpty()) {
+            int rootVal = this.root;
+            this.root = this.left.root;
+            this.right = this.left.right;
+            this.left = this.left.left;
+
+            return rootVal;
+        } else {
+            return this.right.extractMax();
+        }
     }
 
     public int height() {
-        return -1;
+        if (this.isEmpty()) {
+            return 0;
+        } else {
+            return Math.max(this.left.height() + 1, this.right.height() + 1);
+        }
+
     }
 
     public int count(int item) {
-        return -1;
+        if (this.isEmpty()) {
+            return 0;
+        } else if (item < this.root) {
+            return this.left.count(item);
+        } else if (item > this.root) {
+            return this.right.count(item);
+        } else {
+            return 1 + this.left.count(item) + this.right.count(item);
+        }
     }
 
     public int getSize() {
-        return -1;
+        if (this.isEmpty()) {
+            return 0;
+        } else {
+            return this.left.getSize() + 1 + this.right.getSize();
+        }
     }
 
     public static void main(String[] args) {
