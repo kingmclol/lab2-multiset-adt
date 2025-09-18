@@ -23,8 +23,11 @@ public class ArrayListMultiSet extends MultiSet {
      */
     @Override
     void remove(int item) {
-        if (lst.contains(item)) {
-            lst.remove(item);
+        for (int i = 0; i < lst.size(); i++) {
+            if (lst.get(i) == item) {
+                lst.remove(i);
+                return;
+            }
         }
     }
 

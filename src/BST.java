@@ -2,7 +2,7 @@
  * A minimal implementation of a binary search tree. See the python version for
  * additional documentation.
  * You can also see <a href="https://www.teach.cs.toronto.edu/~csc148h/notes/binary-search-trees/bst_implementation.html">
- *     CSC148 Course Notes Section 8.5 BST Implementation and Search</a>
+ * CSC148 Course Notes Section 8.5 BST Implementation and Search</a>
  * if you want a refresher on BSTs, but it is not required to complete this assignment.
  */
 public class BST {
@@ -25,8 +25,6 @@ public class BST {
     public BST() {
         root = null;
         // left and right default to being null
-        left = null;
-        right = null;
     }
 
 
@@ -53,28 +51,30 @@ public class BST {
             this.root = item;
             this.left = new BST();
             this.right = new BST();
-        } else if (item <= this.root) {
+        } else if (item < this.root) {
             this.left.insert(item);
-        } else {
+        } else if (item > this.root) {
             this.right.insert(item);
+        } else {
+            // item == this.root; prefer left
+            this.left.insert(item);
         }
     }
 
 
     public void delete(int item) {
-        if (!this.isEmpty()) {
-            if (item == this.root) {
-                deleteRoot();
-            } else if (item < this.root) {
-                this.left.delete(item);
-            } else {
-                this.right.delete(item);
-            }
+        if (this.root == item) {
+            this.deleteRoot();
+        } else if (item < this.root) {
+            this.left.delete(item);
+        } else {
+            this.right.delete(item);
         }
     }
 
     private void deleteRoot() {
         if (this.left.isEmpty() && this.right.isEmpty()) {
+            // Leaf
             this.root = null;
             this.left = null;
             this.right = null;
@@ -87,21 +87,22 @@ public class BST {
             this.right = this.left.right;
             this.left = this.left.left;
         } else {
-            // both left and right are non-empty
+            // Both left and right trees exist.
             this.root = this.left.extractMax();
         }
     }
 
 
     private int extractMax() {
-        if (this.left.isEmpty()) {
-            int max = this.root;
-            this.root = this.right.root;
-            this.left = this.right.left;
-            this.right = this.right.right;
-            return max;
+        if (this.right.isEmpty()) {
+            int rootVal = this.root;
+            this.root = this.left.root;
+            this.right = this.left.right;
+            this.left = this.left.left;
+
+            return rootVal;
         } else {
-            return this.left.extractMax();
+            return this.right.extractMax();
         }
     }
 
@@ -109,19 +110,20 @@ public class BST {
         if (this.isEmpty()) {
             return 0;
         } else {
-            return 1 + Math.max(this.left.height(), this.right.height());
+            return Math.max(this.left.height() + 1, this.right.height() + 1);
         }
+
     }
 
     public int count(int item) {
         if (this.isEmpty()) {
             return 0;
-        } else if (item == this.root) {
-            return 1 + this.left.count(item) + this.right.count(item);
         } else if (item < this.root) {
             return this.left.count(item);
-        } else {
+        } else if (item > this.root) {
             return this.right.count(item);
+        } else {
+            return 1 + this.left.count(item) + this.right.count(item);
         }
     }
 
@@ -129,7 +131,7 @@ public class BST {
         if (this.isEmpty()) {
             return 0;
         } else {
-            return 1 + this.left.getSize() + this.right.getSize();
+            return this.left.getSize() + 1 + this.right.getSize();
         }
     }
 
